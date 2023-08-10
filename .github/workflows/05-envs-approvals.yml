@@ -1,0 +1,63 @@
+name: Workflow with different environments and approval rules
+
+on:
+  pull request:
+  
+permissions:
+  issues: write
+  
+jobs:
+  development:
+    name: development Job
+    environment:
+      name: development
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@main
+    - name: Install az ml extension
+      run: az extension add -n ml -y
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Clone repo
+      run: git clone https://github.com/j4nb00n/mslearn-mlops rp-mlops
+    - name: Create compute cluster
+      run: az ml compute create --name "cc-mlops" --size STANDARD_DS11_V2 --max-instances 2 --type AmlCompute --resource-group rg-mlops --workspace-name ws-mlops
+    - name: Trigger job
+      run: az ml job create --file ./rp-mlops/src/job.yml --resource-group rg-mlops --workspace-name ws-mlops --stream
+    - name: Placeholder
+      run: |
+        echo "end of development job"
+
+  production:
+    needs: development
+    name: production Job
+    environment:
+      name: production
+    runs-on: ubuntu-latest
+    steps:
+    - name: Manual Workflow Approval
+      uses: trstringer/manual-approval@v1.9.0
+      timeout-minutes: 60
+      with:
+        secret: ${{ github.TOKEN }}
+        approvers: j4nb00n
+    - name: Check out repo
+      uses: actions/checkout@main
+    - name: Install az ml extension
+      run: az extension add -n ml -y
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Clone repo
+      run: git clone https://github.com/j4nb00n/mslearn-mlops rp-mlops
+    - name: Create compute cluster
+      run: az ml compute create --name "cc-mlops" --size STANDARD_DS11_V2 --max-instances 2 --type AmlCompute --resource-group rg-mlops --workspace-name ws-mlops
+    - name: Trigger job
+      run: az ml job create --file ./rp-mlops/src/jobprd.yml --resource-group rg-mlops --workspace-name ws-mlops --stream
+    - name: Placeholder
+      run: |
+        echo "end of production job"
