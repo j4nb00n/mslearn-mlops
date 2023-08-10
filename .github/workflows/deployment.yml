@@ -1,0 +1,22 @@
+name: Create endpoint and deploy model
+on:
+  workflow_dispatch:
+jobs:
+  create-endpoint-and-deploy-model:
+    name: Create endpoint and deploy model
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@main
+      - name: Install az ml extension
+        run: az extension add -n ml -y
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+      - name: Clone repo
+        run: git clone https://github.com/j4nb00n/mslearn-mlops/ rp-mlops
+      - name: Create Endpoint via yml file
+        run: az ml online-endpoint create --file ./src/create-endpoint.yml --resource-group rg-mlops --workspace-name ws-mlops
+      - name: Deploy model to this endpoint
+        run: az ml online-deployment create --file ./src/deployment.yml --resource-group rg-mlops --workspace-name ws-mlops
