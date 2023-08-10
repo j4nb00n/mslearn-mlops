@@ -16,7 +16,7 @@ jobs:
           creds: ${{secrets.AZURE_CREDENTIALS}}
       - name: Clone repo
         run: git clone https://github.com/j4nb00n/mslearn-mlops/ rp-mlops
-      - name: Create Endpoint via yml file
-        run: az ml online-endpoint create --file ./src/create-endpoint.yml --resource-group rg-mlops --workspace-name ws-mlops
+#      - name: Create Endpoint via yml file
+#        run: az ml online-endpoint create --file ./src/create-endpoint.yml --resource-group rg-mlops --workspace-name ws-mlops
       - name: Deploy model to this endpoint
-        run: az ml online-deployment create --file ./src/deployment.yml --resource-group rg-mlops --workspace-name ws-mlops
+        run: az ml online-deployment update --file ./src/deployment.yml --resource-group rg-mlops --workspace-name ws-mlops
