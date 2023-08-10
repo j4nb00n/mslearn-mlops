@@ -4,7 +4,7 @@ endpoint_name: ep-mlops
 model:
   name: lr-mlops
   version: 1
-  path: azureml://subscriptions/2b748975-b80e-47ba-af0e-f4a57edc7c19/resourcegroups/rg-mlops/workspaces/ws-mlops/datastores/workspaceartifactstore/paths/ExperimentRun/dcid.dynamic_pencil_y1hqrrhfm5/model
+  path: azureml://subscriptions/${{secrets.AZURE_SUBSCRIPTION_ID}}/resourcegroups/rg-mlops/workspaces/ws-mlops/datastores/workspaceartifactstore/paths/ExperimentRun/dcid.dynamic_pencil_y1hqrrhfm5/model
   type: mlflow_model
 # model: azureml:my-model:@latest
 # environment: azureml:model-evaluation:@latest
