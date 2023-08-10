@@ -15,5 +15,9 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{secrets.AZURE_CREDENTIALS}}
-
-
+    - name: Clone repo
+      run: git clone https://github.com/j4nb00n/mslearn-mlops rp-mlops
+    - name: Create compute cluster
+      run: az ml compute create --name "cc-mlops" --size STANDARD_DS11_V2 --max-instances 2 --type AmlCompute --resource-group rg-mlops --workspace-name ws-mlops
+    - name: Manually trigger job
+      run: az ml job create --file ./rp-mlops/src/job.yml --resource-group rg-mlops --workspace-name ws-mlops
